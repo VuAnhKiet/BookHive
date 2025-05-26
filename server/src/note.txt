@@ -1,0 +1,4 @@
+// For running changes in tables
+npm run migration:generate --name=your-changes
+// Commit changes to db
+npm run migration:run 

@@ -1,0 +1,276 @@
+# ------------------------------------------------------
+# THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
+# ------------------------------------------------------
+
+type Book {
+  author: String!
+  condition: String!
+  cover_image: String!
+  created_at: DateTime!
+  description: String!
+  genre: String!
+  id: ID!
+  late_fee_per_day: Float!
+  rental_price_per_day: Float!
+  status: String!
+  title: String!
+  updated_at: DateTime!
+}
+
+type Cart {
+  book: Book!
+  book_id: ID!
+  created_at: DateTime!
+  id: ID!
+  quantity: Int!
+  updated_at: DateTime!
+  user: User!
+  user_id: ID!
+}
+
+type City {
+  country: Country!
+  country_id: ID!
+  created_at: DateTime!
+  districts: [District!]!
+  id: ID!
+  name: String!
+  updated_at: DateTime!
+}
+
+type Country {
+  cities: [City!]!
+  code: String!
+  created_at: DateTime!
+  id: ID!
+  name: String!
+  updated_at: DateTime!
+}
+
+input CreateBookInput {
+  """Example field (placeholder)"""
+  exampleField: Int!
+}
+
+input CreateNotificationInput {
+  """Example field (placeholder)"""
+  exampleField: Int!
+}
+
+input CreateRentalInput {
+  """Example field (placeholder)"""
+  exampleField: Int!
+}
+
+input CreateReviewInput {
+  """Example field (placeholder)"""
+  exampleField: Int!
+}
+
+input CreateStoreInput {
+  """Example field (placeholder)"""
+  exampleField: Int!
+}
+
+input CreateUserInput {
+  """Example field (placeholder)"""
+  exampleField: Int!
+}
+
+"""
+A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date-time format.
+"""
+scalar DateTime
+
+type District {
+  city: City!
+  city_id: ID!
+  created_at: DateTime!
+  id: ID!
+  name: String!
+  updated_at: DateTime!
+}
+
+type Mutation {
+  createBook(createBookInput: CreateBookInput!): Book!
+  createNotification(createNotificationInput: CreateNotificationInput!): Notification!
+  createRental(createRentalInput: CreateRentalInput!): Rental!
+  createReview(createReviewInput: CreateReviewInput!): Review!
+  createStore(createStoreInput: CreateStoreInput!): Store!
+  createUser(createUserInput: CreateUserInput!): User!
+  removeBook(id: Int!): Book!
+  removeNotification(id: Int!): Notification!
+  removeRental(id: Int!): Rental!
+  removeReview(id: Int!): Review!
+  removeStore(id: Int!): Store!
+  removeUser(id: Int!): User!
+  updateBook(updateBookInput: UpdateBookInput!): Book!
+  updateNotification(updateNotificationInput: UpdateNotificationInput!): Notification!
+  updateRental(updateRentalInput: UpdateRentalInput!): Rental!
+  updateReview(updateReviewInput: UpdateReviewInput!): Review!
+  updateStore(updateStoreInput: UpdateStoreInput!): Store!
+  updateUser(updateUserInput: UpdateUserInput!): User!
+}
+
+type Notification {
+  created_at: DateTime!
+  id: ID!
+  message: String!
+  status: String!
+  type: String!
+  updated_at: DateTime!
+  user: User!
+  user_id: ID!
+}
+
+type Payment {
+  amount: Float!
+  created_at: DateTime!
+  id: ID!
+  payment_method: String!
+  rental: Rental!
+  rental_id: ID!
+  status: String!
+  transaction_date: DateTime!
+  updated_at: DateTime!
+  user: User!
+  user_id: ID!
+}
+
+type Query {
+  book(id: Int!): Book!
+  notification(id: Int!): Notification!
+  rental(id: Int!): Rental!
+  review(id: Int!): Review!
+  store(id: Int!): Store!
+  user(id: Int!): User!
+}
+
+type Rental {
+  book: Book!
+  book_id: ID!
+  created_at: DateTime!
+  id: ID!
+  late_fee_paid: Boolean!
+  payment_status: String!
+  rental_due_date: DateTime!
+  rental_start_date: DateTime!
+  renter: User!
+  renter_id: ID!
+  return_date: DateTime
+  status: String!
+  store: Store!
+  store_id: ID!
+  total_amount: Float!
+  updated_at: DateTime!
+}
+
+type Review {
+  book: Book!
+  book_id: ID!
+  comment: String!
+  created_at: DateTime!
+  id: ID!
+  rating: Int!
+  renter: User!
+  renter_id: ID!
+  store: Store
+  store_id: ID
+  updated_at: DateTime!
+}
+
+type Store {
+  books: [Book!]!
+  created_at: DateTime!
+  id: ID!
+  location: String!
+  manager: User!
+  name: String!
+  rentals: [Rental!]!
+  store_manager_id: ID!
+  updated_at: DateTime!
+}
+
+input UpdateBookInput {
+  """Example field (placeholder)"""
+  exampleField: Int
+  id: Int!
+}
+
+input UpdateNotificationInput {
+  """Example field (placeholder)"""
+  exampleField: Int
+  id: Int!
+}
+
+input UpdateRentalInput {
+  """Example field (placeholder)"""
+  exampleField: Int
+  id: Int!
+}
+
+input UpdateReviewInput {
+  """Example field (placeholder)"""
+  exampleField: Int
+  id: Int!
+}
+
+input UpdateStoreInput {
+  """Example field (placeholder)"""
+  exampleField: Int
+  id: Int!
+}
+
+input UpdateUserInput {
+  """Example field (placeholder)"""
+  exampleField: Int
+  id: Int!
+}
+
+type User {
+  books: [Book!]!
+  carts: [Cart!]!
+  created_at: DateTime!
+  email: String!
+  id: ID!
+  name: String!
+  notifications: [Notification!]!
+  payments: [Payment!]!
+  phone_number: String
+  profile_image: String
+  rentals: [Rental!]!
+  reviews: [Review!]!
+  role: UserRole!
+  stores: [Store!]!
+  updated_at: DateTime!
+  wallet_balance: Float!
+  wishlist: [Wishlist!]!
+  withdrawals: [Withdrawal!]!
+}
+
+enum UserRole {
+  ADMIN
+  LENDER
+  RENTER
+  STORE_MANAGER
+}
+
+type Wishlist {
+  book: Book!
+  book_id: String!
+  created_at: DateTime!
+  id: ID!
+  renter: User!
+  renter_id: String!
+  updated_at: DateTime!
+}
+
+type Withdrawal {
+  amount: Float!
+  created_at: DateTime!
+  id: ID!
+  lender: User!
+  lender_id: String!
+  status: String!
+  updated_at: DateTime!
+}
