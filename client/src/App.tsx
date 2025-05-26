@@ -1,19 +1,19 @@
 import './App.css';
 import Home from './pages/Home';
-import Header from './pages/Header';
-import Footer from './pages/Footer';
+import Header from './components/Header';
+import Footer from './components/Footer';
 import { BrowserRouter as Router, Route, Routes, Navigate } from 'react-router-dom';
-import Login from './pages/Login';
-import Register from './pages/Register';
-import ForgotPassword from './pages/ForgotPassword';
-import LendBook from './pages/LendBook';
-import BookDetails from './pages/BookDetails';
-import Profile from './pages/Profile+Setting/Profile';
-import StoreDashboard from './pages/StoreDashboard';
-import UserDashboard from './pages/UserDashboard';
-import WishList from './pages/WishList';
-import RentalHistory from './pages/RentalHistory';
-import TransactionHistory from './pages/TransactionHistory';
+import Login from './pages/auth/Login';
+import Register from './pages/auth/Register';
+import ForgotPassword from './pages/auth/ForgotPassword';
+import LendBook from './pages/user/LendBook';
+import BookDetails from './pages/books/BookDetails';
+import Profile from './pages/user/Profile';
+import StoreDashboard from './pages/store/StoreDashboard';
+import UserDashboard from './pages/user/UserDashboard';
+import WishList from './pages/user/WishList';
+import RentalHistory from './pages/user/RentalHistory';
+import TransactionHistory from './pages/user/TransactionHistory';
 function App() {
   return (
     <div className="App">
