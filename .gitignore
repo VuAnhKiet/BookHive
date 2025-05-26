@@ -29,3 +29,6 @@ server/.env.production.local
 # Miscellaneous
 client/.DS_Store
 server/.DS_Store
+
+#Dist
+server/dist/
