@@ -6,6 +6,7 @@ import {
   UpdateDateColumn,
   ManyToOne,
   JoinColumn,
+  DeleteDateColumn,
 } from 'typeorm';
 import { ObjectType, Field, ID } from '@nestjs/graphql';
 import { User } from './user.entity';
@@ -48,6 +49,10 @@ export class Notification {
   @Field()
   @CreateDateColumn()
   created_at: Date;
+
+  @Field()
+  @DeleteDateColumn()
+  deleted_at?: Date;
 
   @Field()
   @UpdateDateColumn()
