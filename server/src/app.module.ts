@@ -9,6 +9,7 @@ import { RentalModule } from './modules/rental/rental.module';
 import { ReviewModule } from './modules/review/review.module';
 import { StoreModule } from './modules/store/store.module';
 import { UserModule } from './modules/user/user.module';
+import { MailModule } from './modules/mail/mail.module';
 @Module({
   imports: [
     TypeOrmModule.forRoot(dataSourceOptions),
@@ -20,6 +21,7 @@ import { UserModule } from './modules/user/user.module';
     ReviewModule,
     StoreModule,
     UserModule,
+    MailModule,
   ],
   controllers: [],
   providers: [],
