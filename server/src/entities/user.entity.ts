@@ -5,6 +5,7 @@ import {
   CreateDateColumn,
   UpdateDateColumn,
   OneToMany,
+  DeleteDateColumn,
 } from 'typeorm';
 import { ObjectType, Field, ID, registerEnumType } from '@nestjs/graphql';
 import { Book } from './book.entity';
@@ -37,18 +38,24 @@ export class User {
 
   @Field()
   @Column()
-  name: string;
+  fullName: string;
 
   @Field()
   @Column({ unique: true })
   email: string;
 
   @Column()
-  password: string; 
+  password: string;
 
   @Field(() => UserRole)
   @Column({ type: 'enum', enum: UserRole })
   role: UserRole;
+
+  @Column({ nullable: true })
+  resetPasswordToken: string | null;
+
+  @Column({ type: 'timestamp', nullable: true })
+  resetPasswordExpires: Date | null;
 
   @Field({ nullable: true })
   @Column({ nullable: true })
@@ -65,6 +72,10 @@ export class User {
   @Field()
   @CreateDateColumn()
   created_at: Date;
+
+  @Field()
+  @DeleteDateColumn()
+  deleted_at?: Date;
 
   @Field()
   @UpdateDateColumn()

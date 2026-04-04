@@ -1,16 +1,17 @@
 import {
   Entity, PrimaryGeneratedColumn, Column, CreateDateColumn,
-  UpdateDateColumn, ManyToOne, JoinColumn, OneToMany
+  UpdateDateColumn, ManyToOne, JoinColumn, OneToMany,
+  DeleteDateColumn
 } from 'typeorm';
 import { ObjectType, Field, ID, Float } from '@nestjs/graphql';
 import { User } from './user.entity';
 import { Store } from './store.entity';
 import { Cart } from './cart.entity';
 
-@ObjectType() // 👈 Needed for GraphQL
+@ObjectType() 
 @Entity('books')
 export class Book {
-  @Field(() => ID) // 👈 Exposes in GraphQL
+  @Field(() => ID)
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
@@ -59,6 +60,10 @@ export class Book {
   @Field()
   @CreateDateColumn()
   created_at: Date;
+
+  @Field()
+  @DeleteDateColumn()
+  deleted_at?: Date;
 
   @Field()
   @UpdateDateColumn()

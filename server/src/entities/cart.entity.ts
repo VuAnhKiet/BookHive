@@ -6,15 +6,16 @@ import {
   UpdateDateColumn,
   ManyToOne,
   JoinColumn,
+  DeleteDateColumn,
 } from 'typeorm';
 import { ObjectType, Field, ID, Int } from '@nestjs/graphql';
 import { User } from './user.entity';
 import { Book } from './book.entity';
 
-@ObjectType()  
+@ObjectType()
 @Entity('cart')
 export class Cart {
-  @Field(() => ID)  
+  @Field(() => ID)
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
@@ -35,15 +36,19 @@ export class Cart {
   created_at: Date;
 
   @Field()
+  @DeleteDateColumn()
+  deleted_at?: Date;
+
+  @Field()
   @UpdateDateColumn()
   updated_at: Date;
 
-  @Field(() => User)  
+  @Field(() => User)
   @ManyToOne(() => User, user => user.carts)
   @JoinColumn({ name: 'user_id' })
   user: User;
 
-  @Field(() => Book)  
+  @Field(() => Book)
   @ManyToOne(() => Book, book => book.cart)
   @JoinColumn({ name: 'book_id' })
   book: Book;

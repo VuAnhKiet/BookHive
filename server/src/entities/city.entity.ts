@@ -7,6 +7,7 @@ import {
   ManyToOne,
   JoinColumn,
   OneToMany,
+  DeleteDateColumn,
 } from 'typeorm';
 import { ObjectType, Field, ID } from '@nestjs/graphql';
 import { Country } from './country.entity';
@@ -30,6 +31,10 @@ export class City {
   @Field()
   @CreateDateColumn()
   created_at: Date;
+
+  @Field()
+  @DeleteDateColumn()
+  deleted_at?: Date;
 
   @Field()
   @UpdateDateColumn()
