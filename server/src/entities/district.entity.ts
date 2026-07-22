@@ -16,19 +16,19 @@ import { City } from './city.entity';
 export class District {
   @Field(() => ID)
   @PrimaryGeneratedColumn('uuid')
-  id: string;
+  id!: string;
 
   @Field()
   @Column()
-  name: string;
+  name!: string;
 
   @Field(() => ID)
   @Column('uuid')
-  city_id: string;
+  city_id!: string;
 
   @Field()
   @CreateDateColumn()
-  created_at: Date;
+  created_at!: Date;
 
   @Field()
   @DeleteDateColumn()
@@ -36,10 +36,10 @@ export class District {
 
   @Field()
   @UpdateDateColumn()
-  updated_at: Date;
+  updated_at!: Date;
 
   @Field(() => City)
   @ManyToOne(() => City, city => city.districts)
   @JoinColumn({ name: 'city_id' })
-  city: City;
+  city!: City;
 }

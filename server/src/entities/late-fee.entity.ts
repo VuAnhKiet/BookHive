@@ -17,27 +17,27 @@ import { Payment } from './payment.entity';
 export class LateFee {
   @Field(() => ID)
   @PrimaryGeneratedColumn('uuid')
-  id: string;
+  id!: string;
 
   @Field(() => ID)
   @Column('uuid')
-  rental_id: string;
+  rental_id!: string;
 
   @Field(() => Float)
   @Column({ type: 'decimal', precision: 10, scale: 2 })
-  amount_due: number;
+  amount_due!: number;
 
   @Field()
   @Column({ type: 'boolean', default: false })
-  paid: boolean;
+  paid!: boolean;
 
   @Field(() => ID, { nullable: true })
   @Column('uuid', { nullable: true })
-  payment_id: string;
+  payment_id!: string;
 
   @Field()
   @CreateDateColumn()
-  created_at: Date;
+  created_at!: Date;
 
   @Field()
   @DeleteDateColumn()
@@ -45,15 +45,15 @@ export class LateFee {
 
   @Field()
   @UpdateDateColumn()
-  updated_at: Date;
+  updated_at!: Date;
 
   @Field(() => Rental)
   @ManyToOne(() => Rental)
   @JoinColumn({ name: 'rental_id' })
-  rental: Rental;
+  rental!: Rental;
 
   @Field(() => Payment, { nullable: true })
   @ManyToOne(() => Payment, { nullable: true })
   @JoinColumn({ name: 'payment_id' })
-  payment: Payment;
+  payment!: Payment;
 }

@@ -11,19 +11,19 @@ import { Book } from './book.entity';
 export class Wishlist {
   @Field(() => ID)
   @PrimaryGeneratedColumn('uuid')
-  id: string;
+  id!: string;
 
   @Field()
   @Column('uuid')
-  renter_id: string;
+  renter_id!: string;
 
   @Field()
   @Column('uuid')
-  book_id: string;
+  book_id!: string;
 
   @Field()
   @CreateDateColumn()
-  created_at: Date;
+  created_at!: Date;
 
   @Field()
   @DeleteDateColumn()
@@ -31,15 +31,15 @@ export class Wishlist {
 
   @Field()
   @UpdateDateColumn()
-  updated_at: Date;
+  updated_at!: Date;
 
   @Field(() => User)
   @ManyToOne(() => User, user => user.wishlist)
   @JoinColumn({ name: 'renter_id' })
-  renter: User;
+  renter!: User;
 
   @Field(() => Book)
   @ManyToOne(() => Book)
   @JoinColumn({ name: 'book_id' })
-  book: Book;
+  book!: Book;
 }

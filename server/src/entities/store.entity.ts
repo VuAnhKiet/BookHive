@@ -19,23 +19,23 @@ import { Rental } from './rental.entity';
 export class Store {
   @Field(() => ID)
   @PrimaryGeneratedColumn('uuid')
-  id: string;
+  id!: string;
 
   @Field()
   @Column()
-  name: string;
+  name!: string;
 
   @Field()
   @Column()
-  location: string;
+  location!: string;
 
   @Field(() => ID)
   @Column('uuid')
-  store_manager_id: string;
+  store_manager_id!: string;
 
   @Field()
   @CreateDateColumn()
-  created_at: Date;
+  created_at!: Date;
 
   @Field()
   @DeleteDateColumn()
@@ -43,18 +43,18 @@ export class Store {
 
   @Field()
   @UpdateDateColumn()
-  updated_at: Date;
+  updated_at!: Date;
 
   @Field(() => User)
   @ManyToOne(() => User, user => user.stores)
   @JoinColumn({ name: 'store_manager_id' })
-  manager: User;
+  manager!: User;
 
   @Field(() => [Book])
   @OneToMany(() => Book, book => book.store)
-  books: Book[];
+  books!: Book[];
 
   @Field(() => [Rental])
   @OneToMany(() => Rental, rental => rental.store)
-  rentals: Rental[];
+  rentals!: Rental[];
 }

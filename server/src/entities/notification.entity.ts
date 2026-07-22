@@ -10,45 +10,35 @@ import {
 } from 'typeorm';
 import { ObjectType, Field, ID } from '@nestjs/graphql';
 import { User } from './user.entity';
-
-export enum NotificationType {
-  RENTAL_DUE = 'rental_due',
-  RENTAL_APPROVED = 'rental_approved',
-  PAYMENT_SUCCESS = 'payment_success',
-  LATE_FEE = 'late_fee',
-}
-
-export enum NotificationStatus {
-  UNREAD = 'unread',
-  READ = 'read',
-}
+import { NotificationType } from '../common/enum/notification/notification-type.enum';
+import { NotificationStatus } from '../common/enum/notification/notification-status.enum';
 
 @ObjectType()
 @Entity('notifications')
 export class Notification {
   @Field(() => ID)
   @PrimaryGeneratedColumn('uuid')
-  id: string;
+  id!: string;
 
   @Field(() => ID)
   @Column('uuid')
-  user_id: string;
+  user_id!: string;
 
   @Field()
   @Column('text')
-  message: string;
+  message!: string;
 
   @Field()
   @Column({ type: 'enum', enum: NotificationType })
-  type: NotificationType;
+  type!: NotificationType;
 
   @Field()
   @Column({ type: 'enum', enum: NotificationStatus })
-  status: NotificationStatus;
+  status!: NotificationStatus;
 
   @Field()
   @CreateDateColumn()
-  created_at: Date;
+  created_at!: Date;
 
   @Field()
   @DeleteDateColumn()
@@ -56,10 +46,10 @@ export class Notification {
 
   @Field()
   @UpdateDateColumn()
-  updated_at: Date;
+  updated_at!: Date;
 
   @Field(() => User)
   @ManyToOne(() => User, user => user.notifications)
   @JoinColumn({ name: 'user_id' })
-  user: User;
+  user!: User;
 }

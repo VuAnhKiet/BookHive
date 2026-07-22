@@ -17,23 +17,23 @@ import { Book } from './book.entity';
 export class Cart {
   @Field(() => ID)
   @PrimaryGeneratedColumn('uuid')
-  id: string;
+  id!: string;
 
   @Field(() => ID)
   @Column('uuid')
-  user_id: string;
+  user_id!: string;
 
   @Field(() => ID)
   @Column('uuid')
-  book_id: string;
+  book_id!: string;
 
   @Field(() => Int)
   @Column({ default: 1 })
-  quantity: number;
+  quantity!: number;
 
   @Field()
   @CreateDateColumn()
-  created_at: Date;
+  created_at! : Date;
 
   @Field()
   @DeleteDateColumn()
@@ -41,15 +41,15 @@ export class Cart {
 
   @Field()
   @UpdateDateColumn()
-  updated_at: Date;
+  updated_at!: Date;
 
   @Field(() => User)
   @ManyToOne(() => User, user => user.carts)
   @JoinColumn({ name: 'user_id' })
-  user: User;
+  user!: User;
 
   @Field(() => Book)
   @ManyToOne(() => Book, book => book.cart)
   @JoinColumn({ name: 'book_id' })
-  book: Book;
+  book!: Book;
 }

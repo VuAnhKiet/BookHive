@@ -13,69 +13,59 @@ import { Book } from './book.entity';
 import { User } from './user.entity';
 import { Store } from './store.entity';
 
-export enum RentalStatus {
-  ACTIVE = 'active',
-  RETURNED = 'returned',
-  OVERDUE = 'overdue',
-  LOST = 'lost',
-}
-
-export enum PaymentStatus {
-  PENDING = 'pending',
-  PAID = 'paid',
-  FAILED = 'failed',
-}
+import { PaymentStatus } from '../common/enum/payment/payment-status.enum';
+import { RentalStatus } from '../common/enum/user/rental-status.enum';
 
 @ObjectType()
 @Entity('rentals')
 export class Rental {
   @Field(() => ID)
   @PrimaryGeneratedColumn('uuid')
-  id: string;
+  id!: string;
 
   @Field(() => ID)
   @Column('uuid')
-  book_id: string;
+  book_id!: string;
 
   @Field(() => ID)
   @Column('uuid')
-  renter_id: string;
+  renter_id!: string;
 
   @Field(() => ID)
   @Column('uuid')
-  store_id: string;
+  store_id!: string;
 
   @Field()
   @Column({ type: 'timestamp' })
-  rental_start_date: Date;
+  rental_start_date!: Date;
 
   @Field()
   @Column({ type: 'timestamp' })
-  rental_due_date: Date;
+  rental_due_date!: Date;
 
   @Field({ nullable: true })
   @Column({ type: 'timestamp', nullable: true })
-  return_date: Date;
+  return_date!: Date;
 
   @Field()
   @Column({ type: 'enum', enum: RentalStatus })
-  status: RentalStatus;
+  status!: RentalStatus;
 
   @Field()
   @Column({ type: 'boolean', default: false })
-  late_fee_paid: boolean;
+  late_fee_paid!: boolean;
 
   @Field(() => Float)
   @Column({ type: 'decimal', precision: 10, scale: 2 })
-  total_amount: number;
+  total_amount!: number;
 
   @Field()
   @Column({ type: 'enum', enum: PaymentStatus })
-  payment_status: PaymentStatus;
+  payment_status!: PaymentStatus;
 
   @Field()
   @CreateDateColumn()
-  created_at: Date;
+  created_at!: Date;
 
   @Field()
   @DeleteDateColumn()
@@ -83,20 +73,20 @@ export class Rental {
 
   @Field()
   @UpdateDateColumn()
-  updated_at: Date;
+  updated_at!: Date;
 
   @Field(() => Book)
   @ManyToOne(() => Book)
   @JoinColumn({ name: 'book_id' })
-  book: Book;
+  book!: Book;
 
   @Field(() => User)
   @ManyToOne(() => User, user => user.rentals)
   @JoinColumn({ name: 'renter_id' })
-  renter: User;
+  renter!: User;
 
   @Field(() => Store)
   @ManyToOne(() => Store, store => store.rentals)
   @JoinColumn({ name: 'store_id' })
-  store: Store;
+  store!: Store;
 }

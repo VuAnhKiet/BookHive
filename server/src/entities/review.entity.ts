@@ -18,31 +18,31 @@ import { Store } from './store.entity';
 export class Review {
   @Field(() => ID)
   @PrimaryGeneratedColumn('uuid')
-  id: string;
+  id!: string;
 
   @Field(() => ID)
   @Column('uuid')
-  renter_id: string;
+  renter_id!: string;
 
   @Field(() => ID)
   @Column('uuid')
-  book_id: string;
+  book_id!: string;
 
   @Field(() => ID, { nullable: true })
   @Column('uuid', { nullable: true })
-  store_id: string;
+  store_id!: string;
 
   @Field(() => Int)
   @Column('int')
-  rating: number;
+  rating!: number;
 
   @Field()
   @Column('text')
-  comment: string;
+  comment!: string;
 
   @Field()
   @CreateDateColumn()
-  created_at: Date;
+  created_at!: Date;
 
   @Field()
   @DeleteDateColumn()
@@ -50,20 +50,20 @@ export class Review {
 
   @Field()
   @UpdateDateColumn()
-  updated_at: Date;
+  updated_at!: Date;
 
   @Field(() => User)
   @ManyToOne(() => User, user => user.reviews)
   @JoinColumn({ name: 'renter_id' })
-  renter: User;
+  renter!: User;
 
   @Field(() => Book)
   @ManyToOne(() => Book)
   @JoinColumn({ name: 'book_id' })
-  book: Book;
+  book!: Book;
 
   @Field(() => Store, { nullable: true })
   @ManyToOne(() => Store, { nullable: true })
   @JoinColumn({ name: 'store_id' })
-  store: Store;
+  store!: Store;
 }

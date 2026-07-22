@@ -18,60 +18,51 @@ import { Withdrawal } from './withdrawal.entity';
 import { Store } from './store.entity';
 import { Cart } from './cart.entity';
 
-export enum UserRole {
-  RENTER = 'renter',
-  LENDER = 'lender',
-  STORE_MANAGER = 'store_manager',
-  ADMIN = 'admin',
-}
-
-registerEnumType(UserRole, {
-  name: 'UserRole',
-});
+import { UserRole } from '../common/enum/user/user-role.enum';
 
 @ObjectType()
 @Entity('users')
 export class User {
   @Field(() => ID)
   @PrimaryGeneratedColumn('uuid')
-  id: string;
+  id!: string;
 
   @Field()
   @Column()
-  fullName: string;
+  fullName!: string;
 
   @Field()
   @Column({ unique: true })
-  email: string;
+  email!: string;
 
   @Column()
-  password: string;
+  password!: string;
 
   @Field(() => UserRole)
   @Column({ type: 'enum', enum: UserRole })
-  role: UserRole;
+  role!: UserRole;
 
-  @Column({ nullable: true })
-  resetPasswordToken: string | null;
+  @Column({  type: 'varchar', nullable: true })
+  resetPasswordToken?: string | null;
 
-  @Column({ type: 'timestamp', nullable: true })
-  resetPasswordExpires: Date | null;
-
-  @Field({ nullable: true })
-  @Column({ nullable: true })
-  profile_image: string;
+  @Column({ type: 'timestamptz', nullable: true })
+  resetPasswordExpires!: Date | null;
 
   @Field({ nullable: true })
   @Column({ nullable: true })
-  phone_number: string;
+  profile_image!: string;
+
+  @Field({ nullable: true })
+  @Column({ nullable: true })
+  phone_number!: string;
 
   @Field()
   @Column({ type: 'decimal', precision: 10, scale: 2, default: 0 })
-  wallet_balance: number;
+  wallet_balance!: number;
 
   @Field()
   @CreateDateColumn()
-  created_at: Date;
+  created_at!: Date;
 
   @Field()
   @DeleteDateColumn()
@@ -79,41 +70,41 @@ export class User {
 
   @Field()
   @UpdateDateColumn()
-  updated_at: Date;
+  updated_at!: Date;
 
   @Field(() => [Book])
   @OneToMany(() => Book, (book) => book.owner)
-  books: Book[];
+  books!: Book[];
 
   @Field(() => [Rental])
   @OneToMany(() => Rental, (rental) => rental.renter)
-  rentals: Rental[];
+  rentals!: Rental[];
 
   @Field(() => [Payment])
   @OneToMany(() => Payment, (payment) => payment.user)
-  payments: Payment[];
+  payments!: Payment[];
 
   @Field(() => [Notification])
   @OneToMany(() => Notification, (notification) => notification.user)
-  notifications: Notification[];
+  notifications!: Notification[];
 
   @Field(() => [Review])
   @OneToMany(() => Review, (review) => review.renter)
-  reviews: Review[];
+  reviews!: Review[];
 
   @Field(() => [Wishlist])
   @OneToMany(() => Wishlist, (wishlist) => wishlist.renter)
-  wishlist: Wishlist[];
+  wishlist!: Wishlist[];
 
   @Field(() => [Withdrawal])
   @OneToMany(() => Withdrawal, (withdrawal) => withdrawal.lender)
-  withdrawals: Withdrawal[];
+  withdrawals!: Withdrawal[];
 
   @Field(() => [Store])
   @OneToMany(() => Store, (store) => store.manager)
-  stores: Store[];
+  stores!: Store[];
 
   @Field(() => [Cart])
   @OneToMany(() => Cart, (cart) => cart.user)
-  carts: Cart[];
+  carts!: Cart[];
 }

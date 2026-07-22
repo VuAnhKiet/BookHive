@@ -15,19 +15,19 @@ import { City } from './city.entity';
 export class Country {
   @Field(() => ID)
   @PrimaryGeneratedColumn('uuid')
-  id: string;
+  id!: string;
 
   @Field()
   @Column({ unique: true })
-  name: string;
+  name!: string;
 
   @Field()
   @Column({ unique: true })
-  code: string;
+  code!: string;
 
   @Field()
   @CreateDateColumn()
-  created_at: Date;
+  created_at!: Date;
 
   @Field()
   @DeleteDateColumn()
@@ -35,9 +35,9 @@ export class Country {
 
   @Field()
   @UpdateDateColumn()
-  updated_at: Date;
+  updated_at!: Date;
 
   @Field(() => [City])
   @OneToMany(() => City, city => city.country)
-  cities: City[];
+  cities!: City[];
 }
