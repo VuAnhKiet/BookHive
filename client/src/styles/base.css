@@ -1,0 +1,179 @@
+:root {
+  --primary-color: #5c6bc0;
+  --secondary-color: #ff8a65;
+  --dark-color: #263238;
+  --light-color: #f5f5f5;
+  --accent-color: #4db6ac;
+  --danger-color: #ef5350;
+  --success-color: #66bb6a;
+  --warning-color: #ffca28;
+  --border-radius: 4px;
+  --box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+body {
+  background-color: #f9f9f9;
+  color: var(--dark-color);
+  line-height: 1.6;
+}
+
+a {
+  text-decoration: none;
+  color: var(--primary-color);
+}
+
+button,
+.btn {
+  cursor: pointer;
+  padding: 8px 16px;
+  border: none;
+  border-radius: var(--border-radius);
+  background-color: var(--primary-color);
+  color: white;
+  font-weight: 500;
+  transition: all 0.3s ease;
+}
+
+button:hover,
+.btn:hover {
+  opacity: 0.9;
+}
+
+.btn-secondary {
+  background-color: var(--secondary-color);
+}
+
+.btn-success {
+  background-color: var(--success-color);
+}
+
+.btn-danger {
+  background-color: var(--danger-color);
+}
+
+.btn-warning {
+  background-color: var(--warning-color);
+  color: var(--dark-color);
+}
+
+.auth-required-notice {
+  position: fixed;
+  z-index: 1100;
+  top: 20px;
+  left: 50%;
+  width: max-content;
+  max-width: calc(100vw - 32px);
+  margin: 0;
+  padding: 12px 20px;
+  transform: translateX(-50%);
+  border: 1px solid #e7c46d;
+  border-radius: 10px;
+  background: #fff8e5;
+  box-shadow: 0 8px 24px rgb(0 0 0 / 16%);
+  color: #604b16;
+  font-weight: 600;
+}
+
+.container {
+  max-width: 1200px;
+  margin: 20px auto;
+  padding: 0 20px;
+}
+
+main {
+  padding: 30px 0;
+  min-height: calc(100vh - 150px);
+}
+
+.book-card {
+  background: white;
+  border-radius: var(--border-radius);
+  overflow: hidden;
+  box-shadow: var(--box-shadow);
+  transition: transform 0.3s ease;
+}
+
+.book-card:hover {
+  transform: translateY(-5px);
+}
+
+.book-cover {
+  height: 250px;
+  background-color: #e0e0e0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+
+.book-cover img {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: cover;
+}
+
+.book-status {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  padding: 3px 8px;
+  border-radius: var(--border-radius);
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.status-available {
+  background-color: var(--success-color);
+  color: white;
+}
+
+.status-rented {
+  background-color: var(--warning-color);
+  color: var(--dark-color);
+}
+
+.status-pending {
+  background-color: var(--accent-color);
+  color: white;
+}
+
+.book-info {
+  padding: 15px;
+}
+
+.book-title {
+  font-weight: 600;
+  margin-bottom: 5px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.book-author {
+  color: #666;
+  font-size: 14px;
+  margin-bottom: 10px;
+}
+
+.section-title {
+  font-size: 24px;
+  font-weight: 600;
+  margin-bottom: 20px;
+  padding-bottom: 10px;
+  border-bottom: 2px solid var(--primary-color);
+}
+
+.book-detail-message {
+  padding: 24px 10px;
+}
+
+.book-detail-error {
+  color: #a61b1b;
+}

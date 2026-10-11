@@ -1,50 +1,77 @@
-import React from 'react'
+import { useState } from 'react';
+import {
+  useGetNotificationsQuery,
+  useMarkAllNotificationsReadMutation,
+  useMarkNotificationReadMutation,
+} from '../../services/notificationService';
+import { getApiErrorMessage } from '../../utils/apiError';
 
 function Notification() {
-    return (
-        <div>
-            <div className="tab-content">
-                <div className="form-container">
-                    <div className="form-group-notification">
-                        <label>
-                            Email notifications for new arrivals
-                        </label>
-                        <input type="checkbox" />
-                    </div>
+  const { data: notifications = [], isLoading, error } = useGetNotificationsQuery();
+  const [markRead] = useMarkNotificationReadMutation();
+  const [markAllRead, { isLoading: isMarkingAll }] = useMarkAllNotificationsReadMutation();
+  const [actionError, setActionError] = useState('');
 
-                    <div className="form-group-notification">
-                        <label>
-                            Rental due date reminders
-                        </label>
-                        <input type="checkbox" />
-                    </div>
+  async function handleMarkRead(id: string) {
+    setActionError('');
+    try {
+      await markRead(id).unwrap();
+    } catch (requestError: unknown) {
+      setActionError(getApiErrorMessage(requestError, 'Could not update notification.'));
+    }
+  }
 
-                    <div className="form-group-notification" >
-                        <label >Promotional offers and discounts</label>
-                        <input type="checkbox" />
-                    </div>
+  async function handleMarkAllRead() {
+    setActionError('');
+    try {
+      await markAllRead().unwrap();
+    } catch (requestError: unknown) {
+      setActionError(getApiErrorMessage(requestError, 'Could not update notifications.'));
+    }
+  }
 
-                    <div className="form-group-notification">
-                        <label>
-                             Book recommendations
-                        </label>
-                        <input type="checkbox" />
-                    </div>
+  if (isLoading) return <p role="status">Loading notifications…</p>;
+  if (error) {
+    return <p role="alert">{getApiErrorMessage(error, 'Could not load notifications.')}</p>;
+  }
 
-                    <div className="form-group-notification">
-                        <label>
-                             Account activity updates
-                        </label>
-                        <input type="checkbox" />
-                    </div>
-
-                    <div className="form-group-notification">
-                        <button className="btn btn-primary">Save Preferences</button>
-                    </div>
-                </div>
-            </div>
+  return (
+    <section aria-labelledby="notifications-heading">
+      <div className="form-container">
+        <div className="form-actions">
+          <h3 id="notifications-heading">Notifications</h3>
+          <button
+            className="btn btn-primary"
+            type="button"
+            onClick={handleMarkAllRead}
+            disabled={isMarkingAll || !notifications.some(({ status }) => status !== 'READ')}
+          >
+            {isMarkingAll ? 'Updating…' : 'Mark all as read'}
+          </button>
         </div>
-    )
+        {actionError && <p className="book-detail-error" role="alert">{actionError}</p>}
+        {!notifications.length && <p>You have no notifications.</p>}
+        {notifications.map((notification) => (
+          <article className="notification-item" key={notification.id}>
+            <p>{notification.message}</p>
+            <small>
+              {notification.type.replaceAll('_', ' ')} ·{' '}
+              {new Date(notification.created_at).toLocaleString()}
+            </small>
+            {notification.status !== 'READ' && (
+              <button
+                className="btn"
+                type="button"
+                onClick={() => void handleMarkRead(notification.id)}
+              >
+                Mark as read
+              </button>
+            )}
+          </article>
+        ))}
+      </div>
+    </section>
+  );
 }
 
-export default Notification
+export default Notification;

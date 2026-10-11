@@ -37,6 +37,10 @@ export class Book {
   @Column()
   cover_image!: string;
 
+  @Field()
+  @Column({ type: 'integer', default: 1 })
+  copies!: number;
+
   @Field(() => BookStatus)
   @Column({ type: 'enum', enum: BookStatus, default: BookStatus.PENDING_APPROVAL })
   status!: BookStatus;
@@ -44,16 +48,16 @@ export class Book {
   @Column('uuid')
   owner_id!: string;
 
-  @Column('uuid')
-  store_id!: string;
+  @Column('uuid', { nullable: true })
+  store_id!: string | null;
 
   @Field(() => Float)
   @Column({ type: 'decimal', precision: 10, scale: 2 })
   rental_price_per_day!: number;
 
-  @Field(() => Float)
-  @Column({ type: 'decimal', precision: 10, scale: 2 })
-  late_fee_per_day!: number;
+  @Field(() => Float, { nullable: true })
+  @Column({ type: 'decimal', precision: 10, scale: 2, nullable: true })
+  late_fee_per_day?: number;
 
   @Field(() => BookCondition)
   @Column({ type: 'enum', enum: BookCondition })
@@ -71,13 +75,15 @@ export class Book {
   @UpdateDateColumn()
   updated_at!: Date;
 
+  @Field(() => User, { nullable: true })
   @ManyToOne(() => User, user => user.books)
   @JoinColumn({ name: 'owner_id' })
-  owner!: User;
+  owner!: User | null;
 
+  @Field(() => Store, { nullable: true })
   @ManyToOne(() => Store, store => store.books)
   @JoinColumn({ name: 'store_id' })
-  store!: Store;
+  store!: Store | null;
 
   @OneToMany(() => Cart, cart => cart.book)
   cart!: Cart[];

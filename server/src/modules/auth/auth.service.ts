@@ -3,7 +3,6 @@ import {
     ConflictException,
     Injectable,
     InternalServerErrorException,
-    NotFoundException,
     UnauthorizedException
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
@@ -13,10 +12,12 @@ import { User } from 'src/entities/user.entity';
 import * as bcrypt from 'bcrypt';
 import { Response } from 'express';
 import { MoreThan, Repository } from 'typeorm';
-import { RegisterDto } from 'src/dto/register.dto';
-import { LoginDto } from 'src/dto/login.dto';
 import { MailService } from '../mail/mail.service';
-
+import { AuthResponse } from 'src/modules/auth/model/auth.model';
+import { RegisterInput } from 'src/modules/auth/input/register.input';
+import { LoginInput } from 'src/modules/auth/input/login.input';
+import { ResetPasswordInput } from 'src/modules/auth/input/reset-password.input';
+import { UserRole } from 'src/common/enum/user/user-role.enum';
 
 @Injectable()
 export class AuthService {
@@ -27,50 +28,50 @@ export class AuthService {
         private mailService: MailService
     ) { }
 
-    async register(registerDto: RegisterDto): Promise<string> {
-        const { fullName, email, password } = registerDto;
+    async register(createUserInput: RegisterInput): Promise<AuthResponse> {
+        const { fullName, email, password, confirmPassword } = createUserInput;
 
-        const existingEmail = await this.userRepository.findOne({ where: { email } });
+        if (password !== confirmPassword) {
+            throw new BadRequestException('Passwords do not match');
+        }
 
-        if (existingEmail) {
+        if (await this.findByEmail(email)) {
             throw new ConflictException('This email is already registered!');
         }
 
-        const existingUsername = await this.userRepository.findOne({ where: { fullName } });
-
+        const existingUsername = await this.userRepository.findOneBy({ fullName });
         if (existingUsername) {
             throw new ConflictException('Please try another username!');
         }
 
-        const hashedPassword = await bcrypt.hash(password, 12);
-
-        const newUser = this.userRepository.create({
+        const user = this.userRepository.create({
             fullName,
             email,
-            password: hashedPassword,
+            password: await bcrypt.hash(password, 12),
+            role: UserRole.USER,
         });
 
-        try {
-            await this.userRepository.save(newUser);
-            return 'User created successfully!';
-        } catch (error) {
-            throw new InternalServerErrorException('Could not create user');
-        }
+        await this.userRepository.save(user);
+        return { message: 'User registered successfully.' };
+    }
+
+    async findByEmail(email: string): Promise<User | null> {
+        return this.userRepository.findOneBy({ email });
     }
 
     async login(
-        loginDto: LoginDto,
+        loginInput: LoginInput,
         res: Response
-    ): Promise<{ access_token: string }> {
+    ): Promise<AuthResponse> {
         const user = await this.userRepository.findOne({
-            where: { email: loginDto.email },
+            where: { email: loginInput.email },
         });
 
         if (!user) {
             throw new UnauthorizedException("User doesn't exist");
         }
 
-        const match = await bcrypt.compare(loginDto.password, user.password);
+        const match = await bcrypt.compare(loginInput.password, user.password);
 
         if (!match) {
             throw new UnauthorizedException('Wrong password combination');
@@ -79,6 +80,7 @@ export class AuthService {
         const { access_token } = await this.generateAccessToken({
             id: user.id,
             fullName: user.fullName,
+            role: user.role
         });
 
         const { refresh_token } = await this.generateRefreshToken({
@@ -94,14 +96,18 @@ export class AuthService {
             maxAge: 7 * 24 * 60 * 60 * 1000,
         });
 
-        res.status(200).json({ access_token });
-        return { access_token }
+        return {
+            accessToken: access_token,
+            Role: user.role,
+            message: 'Login successful.',
+        };
     }
 
     private async generateAccessToken(
         payload: {
             id: string,
-            fullName: string
+            fullName: string,
+            role: string
         }
     ): Promise<{ access_token: string }> {
         const access_token = await this.jwtService.signAsync(payload, {
@@ -133,15 +139,16 @@ export class AuthService {
 
     async sendMail(
         email: string
-    ): Promise<string> {
-        return await this.mailService.sendMail(email);
+    ): Promise<AuthResponse> {
+        const message = await this.mailService.sendMail(email);
+        return { message };
     }
 
     async resetPassword(
-        token: string,
-        newPassword: string,
-        confirmPassword: string,
-    ): Promise<{ message: string }> {
+        resetPasswordInput: ResetPasswordInput
+    ): Promise<AuthResponse> {
+        const { token, newPassword, confirmPassword } = resetPasswordInput;
+
         if (newPassword !== confirmPassword) {
             throw new BadRequestException('Passwords do not match');
         }
@@ -178,10 +185,10 @@ export class AuthService {
 
         return { message: 'Password reset successfully. Please log in again.' };
     }
-    
+
     async refreshAccessToken(
-        refreshToken: string
-    ): Promise<{ access_token: string }> {
+        refreshToken: string | undefined
+    ): Promise<AuthResponse> {
         if (!refreshToken) {
             throw new UnauthorizedException('Missing refresh token');
         }
@@ -203,16 +210,22 @@ export class AuthService {
         if (!user) {
             throw new UnauthorizedException('User no longer exists');
         }
-        
+
         const { access_token } = await this.generateAccessToken({
             id: user.id,
             fullName: user.fullName,
+            role: user.role
         });
 
-        return { access_token };
+        return {
+            accessToken: access_token,
+            Role: user.role,
+            message: 'Access token refreshed successfully.',
+        };
     }
 
-    async logout(res: Response): Promise<void> {
+    async logout(res: Response): Promise<AuthResponse> {
         res.clearCookie('refresh_token');
+        return { message: 'Logged out successfully.' };
     }
 }

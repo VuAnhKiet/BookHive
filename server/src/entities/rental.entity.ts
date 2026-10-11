@@ -8,7 +8,13 @@ import {
   JoinColumn,
   DeleteDateColumn,
 } from 'typeorm';
-import { ObjectType, Field, ID, Float } from '@nestjs/graphql';
+import {
+  ObjectType,
+  Field,
+  GraphQLISODateTime,
+  ID,
+  Float,
+} from '@nestjs/graphql';
 import { Book } from './book.entity';
 import { User } from './user.entity';
 import { Store } from './store.entity';
@@ -43,7 +49,7 @@ export class Rental {
   @Column({ type: 'timestamp' })
   rental_due_date!: Date;
 
-  @Field({ nullable: true })
+  @Field(() => GraphQLISODateTime, { nullable: true })
   @Column({ type: 'timestamp', nullable: true })
   return_date!: Date;
 
@@ -80,10 +86,10 @@ export class Rental {
   @JoinColumn({ name: 'book_id' })
   book!: Book;
 
-  @Field(() => User)
+  @Field(() => User, { nullable: true })
   @ManyToOne(() => User, user => user.rentals)
   @JoinColumn({ name: 'renter_id' })
-  renter!: User;
+  renter!: User | null;
 
   @Field(() => Store)
   @ManyToOne(() => Store, store => store.rentals)

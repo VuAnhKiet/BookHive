@@ -2,25 +2,83 @@
 # THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
 # ------------------------------------------------------
 
+type AdminDashboard {
+  books: Int!
+  openDisputes: Int!
+  pendingBooks: Int!
+  pendingTransfers: Int!
+  users: Int!
+}
+
+type AuthResponse {
+  Role: String
+  accessToken: String
+  message: String!
+}
+
 type Book {
   author: String!
-  condition: String!
+  condition: BookCondition!
+  copies: Float!
   cover_image: String!
   created_at: DateTime!
+  deleted_at: DateTime!
   description: String!
   genre: String!
   id: ID!
-  late_fee_per_day: Float!
+  late_fee_per_day: Float
+  owner: User
   rental_price_per_day: Float!
-  status: String!
+  status: BookStatus!
+  store: Store
   title: String!
   updated_at: DateTime!
+}
+
+enum BookCondition {
+  FAIR
+  GOOD
+  NEW
+  POOR
+}
+
+enum BookStatus {
+  AVAILABLE
+  DAMAGED
+  LOST
+  PENDING_APPROVAL
+  REJECTED
+  RENTED
+  TRANSFERRING
+}
+
+type BookTransfer {
+  book_id: ID!
+  created_at: DateTime!
+  decided_at: DateTime
+  decided_by: ID
+  decision_note: String
+  destination_store_id: ID!
+  id: ID!
+  requested_by: ID!
+  source_store_id: ID!
+  status: BookTransferStatus!
+  updated_at: DateTime!
+}
+
+enum BookTransferStatus {
+  APPROVED
+  COMPLETED
+  IN_TRANSIT
+  PENDING
+  REJECTED
 }
 
 type Cart {
   book: Book!
   book_id: ID!
   created_at: DateTime!
+  deleted_at: DateTime!
   id: ID!
   quantity: Int!
   updated_at: DateTime!
@@ -30,8 +88,8 @@ type Cart {
 
 type City {
   country: Country!
-  country_id: ID!
   created_at: DateTime!
+  deleted_at: DateTime!
   districts: [District!]!
   id: ID!
   name: String!
@@ -42,39 +100,27 @@ type Country {
   cities: [City!]!
   code: String!
   created_at: DateTime!
+  deleted_at: DateTime!
   id: ID!
   name: String!
   updated_at: DateTime!
 }
 
 input CreateBookInput {
-  """Example field (placeholder)"""
-  exampleField: Int!
-}
-
-input CreateNotificationInput {
-  """Example field (placeholder)"""
-  exampleField: Int!
-}
-
-input CreateRentalInput {
-  """Example field (placeholder)"""
-  exampleField: Int!
-}
-
-input CreateReviewInput {
-  """Example field (placeholder)"""
-  exampleField: Int!
+  author: String!
+  condition: BookCondition! = NEW
+  cover_image: String!
+  description: String!
+  genre: String!
+  late_fee_per_day: Float = 0
+  rental_price_per_day: Float!
+  title: String!
 }
 
 input CreateStoreInput {
-  """Example field (placeholder)"""
-  exampleField: Int!
-}
-
-input CreateUserInput {
-  """Example field (placeholder)"""
-  exampleField: Int!
+  location: String!
+  name: String!
+  store_manager_id: String!
 }
 
 """
@@ -82,38 +128,192 @@ A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date
 """
 scalar DateTime
 
+type Delivery {
+  book_id: ID!
+  completed_at: DateTime
+  created_at: DateTime!
+  delivery_location: String!
+  destination_store_id: ID!
+  handover_at: DateTime
+  id: ID!
+  pickup_location: String!
+  rental_id: ID
+  requester_id: ID!
+  route_id: ID
+  status: DeliveryStatus!
+  store_id: ID!
+  transfer_id: ID
+  updated_at: DateTime!
+  volunteer_id: ID
+}
+
+type DeliveryLeg {
+  created_at: DateTime!
+  delivery_id: ID!
+  id: ID!
+  route_id: ID!
+  sequence: Int!
+  status: DeliveryStatus!
+  updated_at: DateTime!
+  volunteer_id: ID!
+}
+
+type DeliveryRelay {
+  created_at: DateTime!
+  id: ID!
+  location: String!
+  route_id: ID!
+  sequence: Int!
+}
+
+type DeliveryRoute {
+  capacity: Int!
+  created_at: DateTime!
+  destination_location: String!
+  id: ID!
+  is_active: Boolean!
+  origin_location: String!
+  travel_date: DateTime!
+  updated_at: DateTime!
+  volunteer_id: ID!
+}
+
+enum DeliveryStatus {
+  ACCEPTED
+  ASSIGNED
+  AT_RELAY
+  COMPLETED
+  HANDED_OVER
+  IN_TRANSIT
+  REJECTED
+  REQUESTED
+}
+
+type DeliveryTracking {
+  created_at: DateTime!
+  delivery_id: ID!
+  id: ID!
+  location: String
+  note: String
+  status: DeliveryStatus!
+  updated_by: ID!
+}
+
+type DeliveryTrackingResult {
+  delivery: Delivery!
+  events: [DeliveryTracking!]!
+  legs: [DeliveryLeg!]!
+  relays: [DeliveryRelay!]!
+  routes: [DeliveryRoute!]!
+}
+
+type Dispute {
+  created_at: DateTime!
+  delivery_id: ID
+  handled_at: DateTime
+  handled_by: ID
+  id: ID!
+  reason: String!
+  rental_id: ID
+  reported_by: ID!
+  resolution: String
+  status: DisputeStatus!
+  updated_at: DateTime!
+}
+
+enum DisputeStatus {
+  OPEN
+  REJECTED
+  RESOLVED
+}
+
 type District {
   city: City!
   city_id: ID!
   created_at: DateTime!
+  deleted_at: DateTime!
   id: ID!
   name: String!
   updated_at: DateTime!
 }
 
+input LoginInput {
+  email: String!
+  password: String!
+}
+
+type MomoPaymentCheckout {
+  deeplink: String
+  payUrl: String!
+  payment: Payment!
+  qrCodeUrl: String
+}
+
 type Mutation {
-  createBook(createBookInput: CreateBookInput!): Book!
-  createNotification(createNotificationInput: CreateNotificationInput!): Notification!
-  createRental(createRentalInput: CreateRentalInput!): Rental!
-  createReview(createReviewInput: CreateReviewInput!): Review!
+  acceptAssignment(deliveryId: String!): Delivery!
+  addBook(bookId: String!, storeId: String!): Book!
+  addCopy(id: String!): Book!
+  addToCart(bookId: String!): Cart!
+  addToWishlist(bookId: String!): Wishlist!
+  approveBook(bookId: String!): Book!
+  approveBookHandover(bookId: String!, storeId: String!): Book!
+  approveRequest(rentalId: String!): Rental!
+  approveTransfer(transferId: String!): BookTransfer!
+  assignVolunteer(deliveryId: String!): Delivery!
+  cancelRequest(rentalId: String!): Rental!
+  checkout(rentalId: String!): Rental!
+  completeDelivery(deliveryId: String!): Delivery!
+  create(bookId: String!, comment: String!, rating: Int!, rentalId: String!): Review!
+  createDispute(deliveryId: String, reason: String!, rentalId: String): Dispute!
+  createLendBook(createBookInput: CreateBookInput!): Book!
+  createPayment(paymentMethod: PaymentMethod!, rentalId: String!): Payment!
+  createRelay(location: String!, routeId: String!, sequence: Int!): DeliveryRelay!
+  createRequest(destinationStoreId: String!, rentalId: String!): Delivery!
+  createRoute(capacity: Int!, destinationLocation: String!, originLocation: String!, travelDate: DateTime!): DeliveryRoute!
   createStore(createStoreInput: CreateStoreInput!): Store!
-  createUser(createUserInput: CreateUserInput!): User!
-  removeBook(id: Int!): Book!
-  removeNotification(id: Int!): Notification!
-  removeRental(id: Int!): Rental!
-  removeReview(id: Int!): Review!
-  removeStore(id: Int!): Store!
-  removeUser(id: Int!): User!
-  updateBook(updateBookInput: UpdateBookInput!): Book!
-  updateNotification(updateNotificationInput: UpdateNotificationInput!): Notification!
-  updateRental(updateRentalInput: UpdateRentalInput!): Rental!
-  updateReview(updateReviewInput: UpdateReviewInput!): Review!
-  updateStore(updateStoreInput: UpdateStoreInput!): Store!
-  updateUser(updateUserInput: UpdateUserInput!): User!
+  createTransfer(bookId: String!, destinationStoreId: String!, sourceStoreId: String!): BookTransfer!
+  delete(reviewId: String!): Boolean!
+  deleteLentBook(bookId: String!): Boolean!
+  deleteStore(id: String!): Boolean!
+  handleDispute(disputeId: String!, resolution: String!, status: DisputeStatus!): Dispute!
+  handoverBook(deliveryId: String!): Delivery!
+  login(loginInput: LoginInput!): AuthResponse!
+  logout: AuthResponse!
+  markAllAsRead: Boolean!
+  markAsRead(notificationId: String!): Notification!
+  payRentalWithWallet(rentalId: String!): Payment!
+  processPayment(paymentId: String!): Payment!
+  refreshToken: AuthResponse!
+  refund(paymentId: String!): Payment!
+  register(registerInput: RegisterInput!): AuthResponse!
+  rejectAssignment(deliveryId: String!): Delivery!
+  rejectBook(bookId: String!): Book!
+  rejectRequest(rentalId: String!): Rental!
+  rejectTransfer(reason: String, transferId: String!): BookTransfer!
+  removeBook(bookId: String!, storeId: String!): Book!
+  removeCopy(id: String!): Book!
+  removeFromCart(bookId: String!): Boolean!
+  removeFromWishlist(bookId: String!): Boolean!
+  removeUser(id: String!): Boolean!
+  resetPassword(resetPasswordInput: ResetPasswordInput!): AuthResponse!
+  returnBook(rentalId: String!): Rental!
+  send(message: String!, type: NotificationType!, userId: String!): Notification!
+  sendMail(email: String!): AuthResponse!
+  sendRequestToAdmin(userId: String!): Boolean!
+  startMomoPayment(rentalId: String!): MomoPaymentCheckout!
+  update(comment: String, rating: Int, reviewId: String!): Review!
+  updateBook(id: String!, updateBookInput: UpdateBookInput!): Book!
+  updateCartQuantity(bookId: String!, quantity: Float!): Cart!
+  updateProfile(updateProfileInput: UpdateProfileInput!): User!
+  updateStatus(deliveryId: String!, location: String, note: String, status: DeliveryStatus!): Delivery!
+  updateStore(id: String!, updateStoreInput: UpdateStoreInput!): Store!
+  updateUser(id: String!, updateUserInput: UpdateProfileInput!): User!
+  updateUserRole(role: UserRole!, userId: String!): User!
 }
 
 type Notification {
   created_at: DateTime!
+  deleted_at: DateTime!
   id: ID!
   message: String!
   status: String!
@@ -123,9 +323,23 @@ type Notification {
   user_id: ID!
 }
 
+enum NotificationType {
+  DELIVERY_UPDATE
+  LATE_FEE
+  PAYMENT_SUCCESS
+  RENTAL_APPROVED
+  RENTAL_DUE
+}
+
+input PaginationInput {
+  limit: Int = 10
+  page: Int = 1
+}
+
 type Payment {
   amount: Float!
   created_at: DateTime!
+  deleted_at: DateTime!
   id: ID!
   payment_method: String!
   rental: Rental!
@@ -137,25 +351,65 @@ type Payment {
   user_id: ID!
 }
 
+enum PaymentMethod {
+  BANK_TRANSFER
+  CARD
+  MOMO
+  WALLET
+}
+
 type Query {
-  book(id: Int!): Book!
-  notification(id: Int!): Notification!
-  rental(id: Int!): Rental!
-  review(id: Int!): Review!
-  store(id: Int!): Store!
-  user(id: Int!): User!
+  book(id: String!): Book!
+  books(pagination: PaginationInput): [Book!]!
+  calculateFee(rentalId: String!, returnDate: DateTime): Float!
+  calculateRating(bookId: String!): Float!
+  findByBook(bookId: String!): [Review!]!
+  findDisputes: [Dispute!]!
+  findRoutes(destinationLocation: String!, originLocation: String!): [DeliveryRoute!]!
+  findTransfers: [BookTransfer!]!
+  getDashboard: AdminDashboard!
+  getInventory(storeId: String!): [Book!]!
+  getPayment(paymentId: String!): Payment!
+  getRequest(rentalId: String!): Rental!
+  getStoreRentalRequests: [Rental!]!
+  getTracking(deliveryId: String!): DeliveryTrackingResult!
+  getUserPayments: [Payment!]!
+  getUserRentals: [Rental!]!
+  getVolunteerAssignments: [DeliveryTrackingResult!]!
+  getVolunteerRoutes: [VolunteerRouteResult!]!
+  manageBooks: [Book!]!
+  manageUsers: [User!]!
+  me: User!
+  myCart: [Cart!]!
+  myNotifications: [Notification!]!
+  myReviews: [Review!]!
+  myWishlist: [Wishlist!]!
+  searchBooks(searchTerm: String!): [Book!]!
+  store(id: String!): Store!
+  stores: [Store!]!
+  user: [User!]!
+  userByEmail(email: String!): User!
+  userById(id: String!): User!
+}
+
+input RegisterInput {
+  confirmPassword: String!
+  email: String!
+  fullName: String!
+  password: String!
 }
 
 type Rental {
   book: Book!
   book_id: ID!
   created_at: DateTime!
+  deleted_at: DateTime!
   id: ID!
   late_fee_paid: Boolean!
   payment_status: String!
   rental_due_date: DateTime!
   rental_start_date: DateTime!
-  renter: User!
+  renter: User
   renter_id: ID!
   return_date: DateTime
   status: String!
@@ -165,11 +419,18 @@ type Rental {
   updated_at: DateTime!
 }
 
+input ResetPasswordInput {
+  confirmPassword: String!
+  newPassword: String!
+  token: String!
+}
+
 type Review {
   book: Book!
   book_id: ID!
   comment: String!
   created_at: DateTime!
+  deleted_at: DateTime!
   id: ID!
   rating: Int!
   renter: User!
@@ -182,6 +443,7 @@ type Review {
 type Store {
   books: [Book!]!
   created_at: DateTime!
+  deleted_at: DateTime!
   id: ID!
   location: String!
   manager: User!
@@ -192,48 +454,36 @@ type Store {
 }
 
 input UpdateBookInput {
-  """Example field (placeholder)"""
-  exampleField: Int
-  id: Int!
+  author: String
+  condition: BookCondition
+  cover_image: String
+  description: String
+  genre: String
+  late_fee_per_day: Float
+  rental_price_per_day: Float
+  title: String
 }
 
-input UpdateNotificationInput {
-  """Example field (placeholder)"""
-  exampleField: Int
-  id: Int!
-}
-
-input UpdateRentalInput {
-  """Example field (placeholder)"""
-  exampleField: Int
-  id: Int!
-}
-
-input UpdateReviewInput {
-  """Example field (placeholder)"""
-  exampleField: Int
-  id: Int!
+input UpdateProfileInput {
+  email: String
+  fullName: String
+  phone_number: String
 }
 
 input UpdateStoreInput {
-  """Example field (placeholder)"""
-  exampleField: Int
-  id: Int!
-}
-
-input UpdateUserInput {
-  """Example field (placeholder)"""
-  exampleField: Int
-  id: Int!
+  location: String
+  name: String
+  store_manager_id: String
 }
 
 type User {
   books: [Book!]!
   carts: [Cart!]!
   created_at: DateTime!
+  deleted_at: DateTime!
   email: String!
+  fullName: String!
   id: ID!
-  name: String!
   notifications: [Notification!]!
   payments: [Payment!]!
   phone_number: String
@@ -250,15 +500,21 @@ type User {
 
 enum UserRole {
   ADMIN
-  LENDER
-  RENTER
   STORE_MANAGER
+  USER
+  VOLUNTEER
+}
+
+type VolunteerRouteResult {
+  relays: [DeliveryRelay!]!
+  route: DeliveryRoute!
 }
 
 type Wishlist {
   book: Book!
   book_id: String!
   created_at: DateTime!
+  deleted_at: DateTime!
   id: ID!
   renter: User!
   renter_id: String!
@@ -268,6 +524,7 @@ type Wishlist {
 type Withdrawal {
   amount: Float!
   created_at: DateTime!
+  deleted_at: DateTime!
   id: ID!
   lender: User!
   lender_id: String!

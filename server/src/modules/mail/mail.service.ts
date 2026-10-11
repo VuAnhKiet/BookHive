@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { User } from 'src/entities/user.entity';
 import { NotFoundException, InternalServerErrorException } from '@nestjs/common';
 import * as crypto from 'crypto';
-import { LessThan, Repository } from 'typeorm';
+import { Repository } from 'typeorm';
 import * as nodemailer from 'nodemailer';
 import { InjectRepository } from '@nestjs/typeorm';
 
@@ -29,21 +29,14 @@ export class MailService {
       throw new NotFoundException('User not found');
     }
 
-    await this.userRepository.delete({
-      id: user.id,
-      resetPasswordExpires: LessThan(new Date()),
-    });
-
     const token = crypto.randomBytes(16).toString('hex');
     const resetLink = `${process.env.FRONTEND_URL}/reset-password/${token}`;
 
-    const newToken = this.userRepository.create({
-      resetPasswordToken: token,
-      resetPasswordExpires: new Date(Date.now() + 3600000),
-    });
+    user.resetPasswordToken = token;
+    user.resetPasswordExpires = new Date(Date.now() + 3600000);
     
     try {
-      await this.userRepository.save(newToken);
+      await this.userRepository.save(user);
     } catch (error) {
       throw new InternalServerErrorException('Error saving reset token');
     }

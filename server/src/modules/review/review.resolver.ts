@@ -1,35 +1,72 @@
-import { Resolver, Query, Mutation, Args, Int } from '@nestjs/graphql';
-import { ReviewService } from './review.service';
+import { UseGuards } from '@nestjs/common';
+import { Args, Float, Int, Mutation, Query, Resolver } from '@nestjs/graphql';
+import { CurrentUser } from 'src/common/decorators/current-user.decorator';
 import { Review } from 'src/entities/review.entity';
-import { CreateReviewInput } from './dto/create-review.input';
-import { UpdateReviewInput } from './dto/update-review.input';
+import { JwtPayload } from '../auth/interface/jwt-payload.interface';
+import { GqlAuthGuard } from '../guard/jwt.guard';
+import { ReviewService } from './review.service';
 
 @Resolver(() => Review)
 export class ReviewResolver {
   constructor(private readonly reviewService: ReviewService) {}
 
+  @UseGuards(GqlAuthGuard)
   @Mutation(() => Review)
-  createReview(@Args('createReviewInput') createReviewInput: CreateReviewInput) {
-    return this.reviewService.create(createReviewInput);
+  create(
+    @CurrentUser() user: JwtPayload,
+    @Args('bookId') bookId: string,
+    @Args('rentalId') rentalId: string,
+    @Args('rating', { type: () => Int }) rating: number,
+    @Args('comment') comment: string,
+  ) {
+    return this.reviewService.create(
+      bookId,
+      rentalId,
+      user.id,
+      rating,
+      comment,
+    );
   }
 
-  @Query(() => [Review], { name: 'review' })
-  findAll() {
-    return this.reviewService.findAll();
+  @Query(() => [Review])
+  findByBook(@Args('bookId') bookId: string) {
+    return this.reviewService.findByBook(bookId);
   }
 
-  @Query(() => Review, { name: 'review' })
-  findOne(@Args('id', { type: () => Int }) id: number) {
-    return this.reviewService.findOne(id);
+  @UseGuards(GqlAuthGuard)
+  @Query(() => [Review], { name: 'myReviews' })
+  findByUser(@CurrentUser() user: JwtPayload) {
+    return this.reviewService.findByUser(user.id);
   }
 
+  @UseGuards(GqlAuthGuard)
   @Mutation(() => Review)
-  updateReview(@Args('updateReviewInput') updateReviewInput: UpdateReviewInput) {
-    return this.reviewService.update(updateReviewInput.id, updateReviewInput);
+  update(
+    @CurrentUser() user: JwtPayload,
+    @Args('reviewId') reviewId: string,
+    @Args('rating', { type: () => Int, nullable: true }) rating?: number,
+    @Args('comment', { nullable: true }) comment?: string,
+  ) {
+    return this.reviewService.update(
+      reviewId,
+      user.id,
+      user.role,
+      rating,
+      comment,
+    );
   }
 
-  @Mutation(() => Review)
-  removeReview(@Args('id', { type: () => Int }) id: number) {
-    return this.reviewService.remove(id);
+  @UseGuards(GqlAuthGuard)
+  @Mutation(() => Boolean)
+  delete(
+    @CurrentUser() user: JwtPayload,
+    @Args('reviewId') reviewId: string,
+  ) {
+    return this.reviewService.delete(reviewId, user.id, user.role);
+  }
+
+  @Query(() => Float)
+  calculateRating(@Args('bookId') bookId: string) {
+    return this.reviewService.calculateRating(bookId);
   }
 }
